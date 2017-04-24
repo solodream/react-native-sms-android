@@ -14,6 +14,7 @@ import android.telephony.SmsManager;
 import android.util.Log;
 import android.database.Cursor;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.lang.SecurityException;
@@ -56,6 +57,20 @@ public class RNSmsAndroidModule extends ReactContextBaseJavaModule {
             try {
                 SmsManager smsManager = SmsManager.getDefault();
                 smsManager.sendTextMessage(phoneNumberString,null,body,null,null);
+                callback.invoke(null,"success");
+            }
+
+            catch (Exception e) {
+                callback.invoke(null,"error");
+                e.printStackTrace();
+            }
+
+        } else if ((sendType.equals("sendMultipartDirect")) && (body != null) && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)) {
+
+            try {
+                SmsManager smsManager = SmsManager.getDefault();
+                ArrayList<String> parts = smsManager.divideMessage(body);
+                smsManager.sendMultipartTextMessage(phoneNumberString, null, parts, null, null);
                 callback.invoke(null,"success");
             }
 
